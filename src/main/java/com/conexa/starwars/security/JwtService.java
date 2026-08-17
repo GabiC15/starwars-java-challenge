@@ -54,7 +54,7 @@ public class JwtService {
     public boolean isValid(String token, UserDetails userDetails) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getSubject().equals(userDetails.getUsername()) && claims.getExpiration().after(new Date());
+            return claims.getSubject().equals(userDetails.getUsername()) && claims.getExpiration().toInstant().isAfter(clock.instant());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }

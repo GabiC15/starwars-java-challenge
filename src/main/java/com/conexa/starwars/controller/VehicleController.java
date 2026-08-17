@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Vehicles", description = "Star Wars vehicles")
 public class VehicleController {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
-
     private final VehicleService vehicleService;
 
     public VehicleController(VehicleService vehicleService) {

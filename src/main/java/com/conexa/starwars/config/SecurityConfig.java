@@ -45,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                      JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                     ProblemDetailAuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+                                                     ProblemDetailAuthenticationEntryPoint authenticationEntryPoint) {
         http
                 .csrf(AbstractHttpConfigurer::disable) // stateless api, no cookies/sessions
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
