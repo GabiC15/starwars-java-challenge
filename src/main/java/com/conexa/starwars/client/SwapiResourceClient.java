@@ -98,7 +98,10 @@ public class SwapiResourceClient<P> {
                 .build(definition.path()));
 
         SwapiListEnvelope<SwapiExpandedItem<P>> envelope = readValue(json, envelopeType(SwapiListEnvelope.class));
-        List<SwapiItem<P>> items = envelope.results().stream().map(SwapiItem::from).toList();
+        // Swapi re-serves the last page instead of empty when page is out of range
+        List<SwapiItem<P>> items = page > envelope.totalPages()
+                ? List.of()
+                : envelope.results().stream().map(SwapiItem::from).toList();
         return new PageResponse<>(items, page, size, envelope.totalRecords(), envelope.totalPages());
     }
 
