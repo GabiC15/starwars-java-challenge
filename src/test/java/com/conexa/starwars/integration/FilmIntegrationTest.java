@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -48,7 +49,7 @@ class FilmIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void firstPageIsSlicedFromTheFullUnpaginatedSwapiResponse() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/films/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/films/"))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody(FOUR_FILMS_UNPAGINATED)));
 
@@ -63,7 +64,7 @@ class FilmIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void secondPageReturnsTheRemainingFilms() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/films/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/films/"))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody(FOUR_FILMS_UNPAGINATED)));
 

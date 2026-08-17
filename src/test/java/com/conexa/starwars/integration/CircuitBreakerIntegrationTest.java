@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -47,7 +48,7 @@ class CircuitBreakerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void openCircuitReturns503WithoutCallingSwapiAgain() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/"))
                 .willReturn(aResponse().withStatus(500)));
 
         for (int i = 0; i < FORCED_FAILURES; i++) {

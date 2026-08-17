@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -36,7 +37,7 @@ class PeopleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void listsPeopleUsingSwapiNativePagination() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/"))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("""
                                 {
@@ -61,7 +62,7 @@ class PeopleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void filtersByIdAgainstTheSwapiDetailEndpoint() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/1/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/1/"))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("""
                                 {
@@ -79,7 +80,7 @@ class PeopleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void filtersByAnUnknownIdReturns404() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/999/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/999/"))
                 .willReturn(aResponse().withStatus(404)));
 
         mockMvc.perform(get("/api/v1/people?id=999").header("Authorization", bearerToken))
@@ -88,7 +89,7 @@ class PeopleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void filtersByNameUsingSwapisSearch() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/"))
                 .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
                         .withBody("""
                                 {
@@ -105,8 +106,51 @@ class PeopleIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void pageBeyondTheLastOneIsEmpty() throws Exception {
+        // Swapi itself re-serves the last page instead of an empty one
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/"))
+                .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                {
+                                  "message": "ok",
+                                  "total_records": 12,
+                                  "total_pages": 3,
+                                  "results": [
+                                    {"uid": "1", "description": "person", "properties": {"name": "Luke Skywalker", "height": "172"}}
+                                  ]
+                                }
+                                """)));
+
+        mockMvc.perform(get("/api/v1/people?page=6&size=5").header("Authorization", bearerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(0))
+                .andExpect(jsonPath("$.totalElements").value(12))
+                .andExpect(jsonPath("$.totalPages").value(3));
+    }
+
+    @Test
+    void secondLookupByIdUsesTheCache() throws Exception {
+        // id=42 isn't used elsewhere in this class, so the cache is guaranteed cold here
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/42/"))
+                .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                {
+                                  "message": "ok",
+                                  "result": {"uid": "42", "description": "person", "properties": {"name": "Wedge Antilles", "height": "170"}}
+                                }
+                                """)));
+
+        mockMvc.perform(get("/api/v1/people?id=42").header("Authorization", bearerToken))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/people?id=42").header("Authorization", bearerToken))
+                .andExpect(status().isOk());
+
+        SWAPI.verify(1, WireMock.getRequestedFor(urlPathEqualTo("/api/people/42/")));
+    }
+
+    @Test
     void swapiReturningAServerErrorBecomesA502() throws Exception {
-        SWAPI.stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlPathEqualTo("/api/people/"))
+        SWAPI.stubFor(WireMock.get(urlPathEqualTo("/api/people/"))
                 .willReturn(aResponse().withStatus(500)));
 
         mockMvc.perform(get("/api/v1/people?page=7&size=3").header("Authorization", bearerToken))
