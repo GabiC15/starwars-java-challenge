@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Register and login. These two are public, everything else in the API needs
+ * the token they give you back.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "Registration and login. Both endpoints are public and return a JWT to use as a Bearer token on every other endpoint.")

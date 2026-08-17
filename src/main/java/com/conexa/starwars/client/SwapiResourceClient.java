@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-// generic client reused for all 4 SWAPI resources
+/**
+ * Talks to Swapi for one resource type. Reused for people, films, starships
+ *  and vehicles, only the definition and the properties type change.
+ */
 public class SwapiResourceClient<P> {
 
     private static final String RESOURCE_PATH = "/{resource}/";
@@ -59,7 +62,10 @@ public class SwapiResourceClient<P> {
                 .build();
     }
 
-    // must go on a method called from outside the class, or the proxy never sees the call
+    /**
+     * Plain paginated list, no filter.
+     * Must go on a method called from outside the class, or the circuit breaker proxy never sees the call.
+     */
     @CircuitBreaker(name = "swapi")
     public PageResponse<SwapiItem<P>> list(int page, int size) {
         if (definition.nativelyPaged()) {
@@ -71,6 +77,7 @@ public class SwapiResourceClient<P> {
         return PageResponse.of(all, page, size);
     }
 
+    /** Search by name. Swapi never paginates search results itself. */
     @CircuitBreaker(name = "swapi")
     public PageResponse<SwapiItem<P>> searchByName(String query, int page, int size) {
         // cache the full result set per query, slice it in memory below
@@ -79,6 +86,7 @@ public class SwapiResourceClient<P> {
         return PageResponse.of(results, page, size);
     }
 
+    /** Single item by id. Throws ResourceNotFoundException if Swapi says 404. */
     @CircuitBreaker(name = "swapi")
     public SwapiItem<P> findById(String id) {
         SwapiItem<P> cached = detailCache.getIfPresent(id);

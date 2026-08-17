@@ -6,7 +6,11 @@ import com.conexa.starwars.common.PageResponse;
 
 import java.util.List;
 
-// filters by id, then by name, then falls back to a plain listing. Same rule for people, films, starships, vehicles
+/**
+ * Base class for people/films/starships/vehicles services. Filters by id first,
+ * then by name, and falls back to a plain listing if neither is given. Every
+ * resource service just extends this and provides its own map().
+ */
 public abstract class AbstractResourceService<P, R> {
 
     protected final SwapiResourceClient<P> resourceService;
@@ -17,6 +21,7 @@ public abstract class AbstractResourceService<P, R> {
 
     protected abstract R map(SwapiItem<P> item);
 
+    /** id beats name, name beats a plain list. id also skips page/size. */
     public PageResponse<R> find(String id, String name, int page, int size) {
         if (id != null && !id.isBlank()) {
             R single = map(resourceService.findById(id.trim()));

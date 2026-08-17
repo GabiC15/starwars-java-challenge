@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * People endpoints. Same filter rules as films, starships and vehicles:
+ * id wins if it's there, then name, otherwise just list everything.
+ */
 @RestController
 @Tag(name = "People", description = "Star Wars characters")
 public class PersonController {

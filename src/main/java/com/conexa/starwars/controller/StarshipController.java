@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Starship listing and lookup. */
 @RestController
 @Tag(name = "Starships", description = "Star Wars starships")
 public class StarshipController {

@@ -34,6 +34,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    /** Creates the user with an encoded password and hands back a token. */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         String email = request.email().trim().toLowerCase();
@@ -52,6 +53,7 @@ public class AuthService {
         return buildAuthResponse(email, Role.USER.name());
     }
 
+    /** Delegates to AuthenticationManager, then issues a token. */
     public AuthResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email().trim().toLowerCase(), request.password()));
