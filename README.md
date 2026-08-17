@@ -5,7 +5,6 @@
 Backend Java para el challenge técnico: expone People, Films, Starships y Vehicles de [SWAPI](https://www.swapi.tech/documentation) de forma paginada y filtrable, detrás de autenticación propia por JWT.
 
 **Live demo:** https://starwars-java-challenge.onrender.com/swagger-ui.html
-(el free tier de Render duerme la instancia sin tráfico; el primer request puede tardar ~60s en levantar)
 
 ## Stack
 
