@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: java-challenge
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/starwars_challenge}
+    username: ${DB_USERNAME:starwars}
+    password: ${DB_PASSWORD:starwars}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:zVaZuH1eYCTWGfY3vB87bCSdtj8mkeVhb4L3yrkvk+s=}
+    expiration: 1h
+  swapi:
+    base-url: ${SWAPI_BASE_URL:https://www.swapi.tech/api}
+    connect-timeout: 5s
+    read-timeout: 10s
+    cache-ttl: 10m
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      swapi:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        record-exceptions:
+          - com.conexa.starwars.common.exception.ExternalApiException
+
+logging:
+  level:
+    com.conexa.starwars: INFO
