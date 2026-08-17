@@ -1,5 +1,7 @@
 # Star Wars Challenge API
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=GabiC15_starwars-java-challenge&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=GabiC15_starwars-java-challenge)
+
 Backend Java para el challenge técnico: expone People, Films, Starships y Vehicles de [SWAPI](https://www.swapi.tech/documentation) de forma paginada y filtrable, detrás de autenticación propia por JWT.
 
 **Live demo:** URL de Render pendiente

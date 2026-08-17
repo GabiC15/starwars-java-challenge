@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: swapi-challenge
+    name: starwars-java-challenge
     runtime: docker
     dockerfilePath: ./Dockerfile
     plan: free
