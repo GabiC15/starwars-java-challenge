@@ -17,7 +17,6 @@ public abstract class AbstractResourceService<P, R> {
 
     protected abstract R map(SwapiItem<P> item);
 
-    // TODO: consider caching the result
     public PageResponse<R> find(String id, String name, int page, int size) {
         if (id != null && !id.isBlank()) {
             R single = map(resourceService.findById(id.trim()));
