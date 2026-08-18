@@ -6,20 +6,18 @@ import com.conexa.starwars.service.StarshipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Starship listing and lookup. */
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Starships", description = "Star Wars starships")
 public class StarshipController {
 
     private final StarshipService starshipService;
-
-    public StarshipController(StarshipService starshipService) {
-        this.starshipService = starshipService;
-    }
 
     @GetMapping("/api/v1/starships")
     @Operation(summary = "List starships", description = "Paginated list of Star Wars starships, optionally filtered by id and/or name.")

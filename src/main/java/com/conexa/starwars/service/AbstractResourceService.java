@@ -3,6 +3,8 @@ package com.conexa.starwars.service;
 import com.conexa.starwars.client.SwapiItem;
 import com.conexa.starwars.client.SwapiResourceClient;
 import com.conexa.starwars.common.PageResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -11,13 +13,10 @@ import java.util.List;
  * then by name, and falls back to a plain listing if neither is given. Every
  * resource service just extends this and provides its own map().
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractResourceService<P, R> {
 
     protected final SwapiResourceClient<P> resourceService;
-
-    protected AbstractResourceService(SwapiResourceClient<P> resourceService) {
-        this.resourceService = resourceService;
-    }
 
     protected abstract R map(SwapiItem<P> item);
 

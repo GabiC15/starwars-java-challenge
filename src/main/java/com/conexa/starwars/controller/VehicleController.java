@@ -6,20 +6,18 @@ import com.conexa.starwars.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Vehicle listing and lookup. */
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Vehicles", description = "Star Wars vehicles")
 public class VehicleController {
 
     private final VehicleService vehicleService;
-
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
-    }
 
     @GetMapping("/api/v1/vehicles")
     @Operation(summary = "List vehicles", description = "Paginated list of Star Wars vehicles, optionally filtered by id and/or name.")

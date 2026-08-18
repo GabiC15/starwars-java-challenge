@@ -6,6 +6,7 @@ import com.conexa.starwars.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,14 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
  * id wins if it's there, then name, otherwise just list everything.
  */
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "People", description = "Star Wars characters")
 public class PersonController {
 
     private final PersonService personService;
-
-    public PersonController(PersonService personService) {
-        this.personService = personService;
-    }
 
     @GetMapping("/api/v1/people")
     @Operation(summary = "List people", description = "Paginated list of Star Wars characters, optionally filtered by id and/or name.")
