@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -63,7 +64,7 @@ class AuthServiceTest {
         AuthResponse response = authService.register(request);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(captor.capture());
+        verify(userRepository).saveAndFlush(captor.capture());
         User saved = captor.getValue();
 
         assertThat(saved.getEmail()).isEqualTo("leia@rebels.org");
@@ -72,6 +73,17 @@ class AuthServiceTest {
         assertThat(response.email()).isEqualTo("leia@rebels.org");
         assertThat(response.role()).isEqualTo("USER");
         assertThat(response.token()).isNotBlank();
+    }
+
+    @Test
+    void registerCatchesADuplicateFromTheDbConstraint() {
+        // the pre-check passed and the unique constraint is what actually catches it
+        when(userRepository.existsByEmail("leia@rebels.org")).thenReturn(false);
+        when(userRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("duplicate key"));
+        RegisterRequest request = new RegisterRequest("leia@rebels.org", "password123", "Leia Organa");
+
+        assertThatThrownBy(() -> authService.register(request))
+                .isInstanceOf(DuplicateUserException.class);
     }
 
     @Test

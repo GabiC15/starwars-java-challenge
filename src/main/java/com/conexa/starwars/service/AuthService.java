@@ -8,6 +8,7 @@ import com.conexa.starwars.security.JwtService;
 import com.conexa.starwars.model.Role;
 import com.conexa.starwars.model.User;
 import com.conexa.starwars.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,12 @@ public class AuthService {
                 .fullName(request.fullName().trim())
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        try {
+            // flush now so a concurrent duplicate hits the unique constraint
+            userRepository.saveAndFlush(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateUserException("A user with email " + email + " already exists");
+        }
 
         return buildAuthResponse(email, Role.USER.name());
     }
